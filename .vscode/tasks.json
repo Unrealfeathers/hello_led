@@ -1,0 +1,21 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "cmake_config",
+            "type": "shell",
+            "command": "cmake -B build -DCMAKE_TOOLCHAIN_FILE=toolchain.cmake",
+            "problemMatcher": []
+        },
+        {
+            "label": "build",
+            "type": "shell",
+            "command": "cmake --build build -j4",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": ["$gcc"],
+        }
+    ]
+}
