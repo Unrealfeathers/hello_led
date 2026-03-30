@@ -23,10 +23,8 @@ set(CMAKE_ASM_FLAGS "${MCU_FLAGS} -g -x assembler-with-cpp")
 # 指定 GCC 链接脚本所在的路径
 set(LINKER_SCRIPT ${CMAKE_SOURCE_DIR}/startup/gd32f10x_flash.ld)
 
-# --specs=nano.specs  使用精简版 C 库，省 Flash 空间
-# --specs=nosys.specs 不使用操作系统底层系统调用
-# -Wl,--gc-sections   清除未使用的函数和变量段
-set(CMAKE_EXE_LINKER_FLAGS "${MCU_FLAGS} -T${LINKER_SCRIPT} --specs=nosys.specs --specs=nano.specs -Wl,--gc-sections")
+# -Wl,--gc-sections 清除未使用的函数和变量段
+set(CMAKE_EXE_LINKER_FLAGS "${MCU_FLAGS} -T${LINKER_SCRIPT} -Wl,--gc-sections")
 
 # ==========================================
 # 4. 全局宏定义
@@ -40,23 +38,39 @@ add_compile_definitions(
 # 5. 设置头文件搜索路径
 # ==========================================
 include_directories(
+    app
     app/inc
     lib/CMSIS
     lib/CMSIS/GD/GD32F10x/Include
+    lib/FreeRTOS/include
+    lib/FreeRTOS/source/portable/GCC/ARM_CM3
     lib/GD32F10x_standard_peripheral/Include
 )
 
 # ==========================================
 # 6. 收集所有源码文件
 # ==========================================
-# 递归收集外设库和应用的源码
-file(GLOB_RECURSE LIB_SOURCES "lib/GD32F10x_standard_peripheral/Source/*.c")
-file(GLOB_RECURSE APP_SOURCES "app/src/*.c")
-file(GLOB_RECURSE APP_SOURCES "app/*.c")
+file(GLOB_RECURSE GD32_LIB_SOURCES "lib/GD32F10x_standard_peripheral/Source/*.c")
 
-# 手动指定 CMSIS 核心源码和汇编启动文件
+file(GLOB_RECURSE FREERTOS_PORT_SOURCES "lib/FreeRTOS/source/portable/GCC/ARM_CM3/*.c")
+file(GLOB_RECURSE FREERTOS_CORE_SOURCES "lib/FreeRTOS/source/*.c")
+
+file(GLOB_RECURSE APP_SOURCES 
+    "app/src/*.c" 
+    "app/*.c"
+)
+
+# 手动指定 FreeRTOS 内存管理文件、CMSIS 核心源码和汇编启动文件 
+set(FREERTOS_MEM_SOURCES "lib/FreeRTOS/source/portable/MemMang/heap_4.c")
 set(CMSIS_SOURCES  "lib/CMSIS/GD/GD32F10x/Source/system_gd32f10x.c")
 set(STARTUP_SOURCE "startup/startup_gd32f10x_hd.S")
+
+set(LIB_SOURCES 
+    ${GD32_LIB_SOURCES} 
+    ${FREERTOS_PORT_SOURCES} 
+    ${FREERTOS_CORE_SOURCES} 
+    ${FREERTOS_MEM_SOURCES}
+)
 
 # ==========================================
 # 7. 定义并生成最终的可执行文件 (.elf)
@@ -66,6 +80,13 @@ add_executable(${PROJECT_NAME}.elf
     ${LIB_SOURCES}
     ${CMSIS_SOURCES}
     ${STARTUP_SOURCE}
+)
+
+# --specs=nano.specs  使用精简版 C 库，省 Flash 空间
+# --specs=nosys.specs 不使用操作系统底层系统调用
+target_link_options(${PROJECT_NAME}.elf PRIVATE
+    --specs=nano.specs
+    --specs=nosys.specs
 )
 
 # ==========================================

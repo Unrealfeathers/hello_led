@@ -1,3 +1,4 @@
 {
-    "cmake.sourceDirectory": "/home/ubuntu/GD32F10x_FreeRTOS/User/hello_led"
+    "cmake.sourceDirectory": "/home/ubuntu/GD32F10x_FreeRTOS/hello_led",
+    "cortex-debug.variableUseNaturalFormat": false
 }
