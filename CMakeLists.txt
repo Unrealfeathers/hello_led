@@ -23,10 +23,8 @@ set(CMAKE_ASM_FLAGS "${MCU_FLAGS} -g -x assembler-with-cpp")
 # 指定 GCC 链接脚本所在的路径
 set(LINKER_SCRIPT ${CMAKE_SOURCE_DIR}/startup/gd32f10x_flash.ld)
 
-# --specs=nano.specs  使用精简版 C 库，省 Flash 空间
-# --specs=nosys.specs 不使用操作系统底层系统调用
-# -Wl,--gc-sections   清除未使用的函数和变量段
-set(CMAKE_EXE_LINKER_FLAGS "${MCU_FLAGS} -T${LINKER_SCRIPT} --specs=nosys.specs --specs=nano.specs -Wl,--gc-sections")
+# -Wl,--gc-sections 清除未使用的函数和变量段
+set(CMAKE_EXE_LINKER_FLAGS "${MCU_FLAGS} -T${LINKER_SCRIPT} -Wl,--gc-sections")
 
 # ==========================================
 # 4. 全局宏定义
@@ -66,6 +64,13 @@ add_executable(${PROJECT_NAME}.elf
     ${LIB_SOURCES}
     ${CMSIS_SOURCES}
     ${STARTUP_SOURCE}
+)
+
+# --specs=nano.specs  使用精简版 C 库，省 Flash 空间
+# --specs=nosys.specs 不使用操作系统底层系统调用
+target_link_options(${PROJECT_NAME}.elf PRIVATE
+    --specs=nano.specs
+    --specs=nosys.specs
 )
 
 # ==========================================

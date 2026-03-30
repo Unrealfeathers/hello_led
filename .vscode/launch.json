@@ -7,15 +7,14 @@
             "request": "launch",
             "servertype": "external",       // 核心：告诉插件使用外部 GDB Server，不要启动 OpenOCD
             "gdbTarget": "localhost:3333",  // 核心：指向通过 SSH 反代过来的本地 OpenOCD 端口
-
             "cwd": "${workspaceFolder}",
             "executable": "${workspaceFolder}/build/hello_led.elf", // 替换为你的 .elf 文件路径
-
             "gdbPath": "/usr/bin/gdb-multiarch", // 云端安装的多架构 GDB 路径
             "runToEntryPoint": "main", // 烧录后自动运行到 main 函数并停住
             "showDevDebugOutput": "none",
             "svdFile": "${workspaceFolder}/svd/GD32F10x_HD.svd", // 强烈推荐：指向你的 GD32 SVD 文件路径
-
+            "toolchainPrefix": "arm-none-eabi-",      // 指定工具链前缀
+            "objdumpPath": "arm-none-eabi-objdump",   // 明确指定 objdump
             "preLaunchTask": "build" // 可选：绑定你的编译任务
         }
     ]
