@@ -4,13 +4,16 @@
         {
             "label": "cmake_config",
             "type": "shell",
-            "command": "cmake -B build -DCMAKE_TOOLCHAIN_FILE=toolchain.cmake",
+            "command": "cmake -E rm -rf build && cmake -B build -DCMAKE_TOOLCHAIN_FILE=toolchain.cmake",
             "problemMatcher": []
         },
         {
             "label": "build",
             "type": "shell",
             "command": "cmake --build build -j4",
+            "dependsOn": [
+                "cmake_config"
+            ],
             "group": {
                 "kind": "build",
                 "isDefault": true
